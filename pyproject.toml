@@ -1,0 +1,17 @@
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.6"
+uvicorn = {extras = ["standart"], version = "^0.34.0"}
+pydantic = {extras = ["email"], version = "^2.10.5"}
+pydantic-settings = "^2.7.1"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.37"}
+asyncpg = "^0.30.0"
+alembic = "^1.14.0"
+bcrypt = "^4.2.1"
+python-multipart = "^0.0.20"
+pyjwt = {extras = ["crypto"], version = "^2.10.1"}
+loguru = "^0.7.3"
+jinja2 = "^3.1.5"

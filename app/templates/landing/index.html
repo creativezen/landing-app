@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="theme-color" content="#070707">
+    <meta name="apple-mobile-web-app-title" content="npk">
+    <meta name="application-name" content="npk">
+
+    <meta name="title" content="">
+    <meta name="description" content="">
+    <title>Национальная приводная компания</title>
+
+    <link rel="stylesheet" href="static/landing/css/main.css">
+</head>
+
+<body>
+    <div id="up" class="visually-hidden"></div>
+    <header id="header" class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="header__logo">
+                    <a class="logo" href="#">
+                        <img loading="lazy" src="./img/svg/svg-logo-white.svg" alt="Национальная приводная компания">
+                    </a>
+                    <div class="header__logo-tagline">производство частотных <br>преобразователей</div>
+                </div>
+                <nav class="header__nav">
+                    <ul id="main-navigation" class="header__menu" aria-label="Главное меню">
+                        <li><a href="#products">продукты</a></li>
+                        <li><span>контакты</span></li>
+                    </ul>
+                    <div class="header__buttons">
+                        <div id="menu-burger" class="burger">
+                            <button>
+                                <div id="menu-icon" class="burger__icon">
+
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        
+        {% include "sections/section_01.html" %}
+        {% include "sections/section_02.html" %}
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="grid-group">
+                    <div class="grid-child" data-grid="6">
+                        <div class="footer__logo">
+                            <a class="logo" href="#">
+                                <img loading="lazy" src="./img/svg/svg-logo-blue.svg" alt="Национальная приводная компания">
+                            </a>
+                            <div class="footer__tagline">национальная приводная компания</div>
+                        </div>
+                    </div>
+                    <div class="grid-child" data-grid="6">
+                        <div class="footer__contacts">
+                            <div class="footer__contacts-item">
+                                <p>454084 г. Челябинск,</p>
+                                <p>ул. Кожзаводская 108</p>
+                                <a href="tel:+73512004808"><strong>+7(351) 200-48-08</strong></a>
+                            </div>
+                            <div class="footer__contacts-item">
+                                <p>Техническа яподдержка:</p>
+                                <a href="mailto:support@npkprivod.ru"><strong>support@npkprivod.ru</strong></a>
+                            </div>
+                            <div class="footer__contacts-item">
+                                <p>Отдел продаж:</p>
+                                <a href="mailto:sales@npkprivod.ru"><strong>sales@npkprivod.ru</strong></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="mobile-navigation" class="mobile-nav">
+        <ul id="mobile-navigation-list" class="mobile-nav__list">
+            <li class="mobile-nav__item"><a href="#products">продукты</a></li>
+            <li class="mobile-nav__item"><a href="contacts.html">контакты</a></li>
+        </ul>
+    </div>
+
+    <script src="static/landing/js/main.bundle.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,180 @@
+# Игнорируем виртуальное окружение
+venv/
+.venv/
+.env/
+.envrc/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Игнорируем кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Игнорируем файлы настроек IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.spyderproject
+.spyproject
+.ropeproject
+
+# Игнорируем логи и временные файлы
+*.log
+*.sqlite
+*.db
+*.pid
+*.DS_Store
+
+# Игнорируем Alembic migrations (если не хотите включать их в репозиторий)
+/alembic/versions/*
+
+# Игнорируем файлы зависимостей
+Pipfile
+Pipfile.lock
+requirements.txt
+requirements-dev.txt
+# poetry.lock
+pdm.lock
+uv.lock
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# Игнорируем скомпилированные файлы
+*.so
+*.pyc
+
+# Игнорируем локальные настройки
+local_settings.py
+settings_local.py
+db.sqlite3
+db.sqlite3-journal
+
+# Игнорируем статику и медиа (если используется)
+/static/
+/media/
+
+# Игнорируем файлы, связанные с Docker
+# docker-compose.override.yml
+# docker-compose.yml
+# Dockerfile
+# .dockerignore
+
+# Игнорируем тестовые данные
+/test_data/
+/tests/__pycache__/
+
+# Игнорируем файлы, связанные с PostgreSQL
+/postgres_data/
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Flask stuff
+instance/
+.webassets-cache
+
+# Scrapy stuff
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyPI configuration file
+.pypirc
+README.md
+
+pgdata
+app/certs
