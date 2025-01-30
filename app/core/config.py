@@ -50,8 +50,8 @@ class DatabaseConfig(BaseModel):
     
 
 class FilesConfig(BaseModel):
-    landing_url: str = BASE_DIR / "templates/landing"
-    static_url: str = BASE_DIR / "static/landing"
+    landing_templates: str = "templates/landing"
+    static_files: str = "static"
 
 
 class Settings(BaseSettings):

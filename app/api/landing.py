@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from core.config import settings
 
 # Инициализация Jinja2Templates с указанием директории шаблонов
-landing = Jinja2Templates(directory=settings.files.landing_url)
+landing = Jinja2Templates(directory=settings.files.landing_templates)
 
 router = APIRouter(tags=["landing"])
 

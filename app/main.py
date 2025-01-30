@@ -26,7 +26,7 @@ main_app.include_router(router=router_api,)
 main_app.include_router(router=router_landing,)
 main_app.mount(
     "/static", 
-    StaticFiles(directory=settings.files.static_url),
+    StaticFiles(directory=settings.files.static_files),
     name="static"
 )
 
