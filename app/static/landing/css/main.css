@@ -231,7 +231,7 @@ td {
 @font-face {
   font-family: "Involve";
   /* версия подключения шрифтов для локальной разработки */
-  src: url("../fonts/Involve-Regular.woff2") format("woff2");
+  src: url("/static/landing/fonts/Involve-Regular.woff2") format("woff2");
   /* версия подключения шрифтов для темы WordPress */
   /* src: url('/wp-content/themes/imcp/fonts/Involve-Regular.woff2') format("woff2"); */
   font-weight: 400;
@@ -241,7 +241,7 @@ td {
 @font-face {
   font-family: "Involve";
   /* версия подключения шрифтов для локальной разработки */
-  src: url("../fonts/Involve-Medium.woff2") format("woff2");
+  src: url("/static/landing/fonts/Involve-Medium.woff2") format("woff2");
   /* версия подключения шрифтов для темы WordPress */
   /* src: url('/wp-content/themes/imcp/fonts/Involve-Medium.woff2') format("woff2"); */
   font-weight: 500;
@@ -251,7 +251,7 @@ td {
 @font-face {
   font-family: "Involve";
   /* версия подключения шрифтов для локальной разработки */
-  src: url("../fonts/Involve-SemiBold.woff2") format("woff2");
+  src: url("/static/landing/fonts/Involve-SemiBold.woff2") format("woff2");
   /* версия подключения шрифтов для темы WordPress */
   /* src: url('/wp-content/themes/imcp/fonts/Involve-SemiBold.woff2') format("woff2"); */
   font-weight: 600;
@@ -261,7 +261,7 @@ td {
 @font-face {
   font-family: "Involve";
   /* версия подключения шрифтов для локальной разработки */
-  src: url("../fonts/Involve-Bold.woff2") format("woff2");
+  src: url("/static/landing/fonts/Involve-Bold.woff2") format("woff2");
   /* версия подключения шрифтов для темы WordPress */
   /* src: url('/wp-content/themes/imcp/fonts/Involve-Bold.woff2') format("woff2"); */
   font-weight: 700;
@@ -2931,21 +2931,21 @@ ul:not([class]) li:before {
 
 .background-hero, .background-strategy {
   /* генерация путей для всех устройств */
-  background-image: url("../img/bg-abstract-desktop_2x.jpg");
-  background-image: image-set("../img/bg-abstract-desktop_2x.jpg" 2x type("image/jpeg"), "../img/bg-abstract-desktop_2x.webp" 2x type("image/webp"));
+  background-image: url("/static/landing/img/bg-abstract-desktop_2x.jpg");
+  background-image: image-set("/static/landing/img/bg-abstract-desktop_2x.jpg" 2x type("image/jpeg"), "/static/landing/img/bg-abstract-desktop_2x.webp" 2x type("image/webp"));
   /* версия фона для планшета */
   /* версия фона для смартфонов */
 }
 @media only screen and (max-width: 980px) {
   .background-hero, .background-strategy {
-    background-image: url("../img/bg-abstract-tablet_2x.jpg");
-    background-image: image-set("../img/bg-abstract-tablet_2x.jpg" 2x type("image/jpeg"), "../img/bg-abstract-tablet_2x.webp" 2x type("image/webp"));
+    background-image: url("/static/landing/img/bg-abstract-tablet_2x.jpg");
+    background-image: image-set("/static/landing/img/bg-abstract-tablet_2x.jpg" 2x type("image/jpeg"), "/static/landing/img/bg-abstract-tablet_2x.webp" 2x type("image/webp"));
   }
 }
 @media only screen and (max-width: 480px) {
   .background-hero, .background-strategy {
-    background-image: url("../img/bg-abstract-phone_2x.jpg");
-    background-image: image-set("../img/bg-abstract-phone_2x.jpg" 2x type("image/jpeg"), "../img/bg-abstract-phone_2x.webp" 2x type("image/webp"));
+    background-image: url("/static/landing/img/bg-abstract-phone_2x.jpg");
+    background-image: image-set("/static/landing/img/bg-abstract-phone_2x.jpg" 2x type("image/jpeg"), "/static/landing/img/bg-abstract-phone_2x.webp" 2x type("image/webp"));
   }
 }
 
