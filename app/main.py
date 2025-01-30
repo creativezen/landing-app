@@ -10,6 +10,7 @@ from core.config import settings
 from core import db_helper as db
 from api import router as router_api
 from api.landing import router as router_landing
+from api.admin import router as router_admin
 
 
 @asynccontextmanager
@@ -24,6 +25,8 @@ async def lifespan(app: FastAPI):
 main_app = FastAPI(lifespan=lifespan,)
 main_app.include_router(router=router_api,)
 main_app.include_router(router=router_landing,)
+main_app.include_router(router=router_admin)
+
 main_app.mount(
     "/static", 
     StaticFiles(directory=settings.files.static_files),
