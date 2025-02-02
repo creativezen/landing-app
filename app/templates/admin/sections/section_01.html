@@ -1,45 +1,28 @@
 <!-- Основные достиженияи  -->
-<form class="section stream achievements">
+<form class="section stream achievements" data-section="1">
     <div class="container">
         <fieldset class="section__header">
-            <textarea name="" id="" class="title">Основные достиженияи и направления деятельности</textarea>
+            <textarea name="section" id="section_01" class="title">{{ section_achievements.title }}</textarea>
         </fieldset>
         <div class="section__body">
             <div class="grid-group">
-                <fieldset class="grid-child" data-grid="4">
+                {% for achievement in section_achievements.achievements %}
+                <fieldset class="grid-child" data-grid="4" data-table="achievements" data-id={{ achievement.id }}>
                     <div class="card-column border-left auto">
                         <div class="card-column__header">
-                            <textarea name="" id="">Разработка уникальных продуктов</textarea>
+                            <div name="title" data-field="title" contenteditable="true">{{ achievement.title }}</div>
                         </div>
                         <div class="card-column__body">
-                            <textarea name="" id="">Компания сосредоточилась на создании продуктов, превосходящих аналоги на рынке. Это привело к появлению двух инновационных решений — SYNTHESIS X-TREME и SYNTHESIS. Эти устройства обладают улучшенными техническими характеристиками, такими как повышенная защита от пыли и влаги, а также способность работать при отрицательных температурах, что позволяет использовать их в экстремальных условиях эксплуатации.</textarea>
+                            <div name="description" data-field="description" contenteditable="true">{{ achievement.description }}</div>
                         </div>
                     </div>
                 </fieldset>
-                <fieldset class="grid-child" data-grid="4">
-                    <div class="card-column border-left auto">
-                        <div class="card-column__header">
-                            <textarea name="" id="">Повышение эффективности</textarea>
-                        </div>
-                        <div class="card-column__body">
-                            <textarea name="" id="">Высокая надежность продукции позволяет клиентам значительно оптимизировать свои производственные процессы и снижать затраты на эксплуатацию, что является важным конкурентным преимуществом компании.</textarea>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset class="grid-child" data-grid="4">
-                    <div class="card-column border-left auto">
-                        <div class="card-column__header">
-                            <textarea name="" id="">Локализация производства</textarea>
-                        </div>
-                        <div class="card-column__body">
-                            <textarea name="" id="">Понимая важность адаптации к местным условиям и тенденциям рынка, компания приняла стратегическое решение сосредоточиться на углублении локализации производства частотных преобразователей в России. Этот шаг направлен на улучшение доступности продукции для отечественных потребителей и способствует созданию новых рабочих мест в стране.</textarea>
-                        </div>
-                    </div>
-                </fieldset>
+                {% endfor %}
             </div>
         </div>
-        <div class="section__footer">
+        <!-- <div class="section__footer">
             <button class="button" type="submit">Сохранить</button>
-        </div>
+        </div> -->
     </div>
 </form>
+
