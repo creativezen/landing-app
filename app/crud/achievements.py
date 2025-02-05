@@ -1,6 +1,7 @@
-from typing import List, TypeVar, Generic, Type
+from typing import List, TypeVar, Generic, Type, Optional
 from pydantic import BaseModel
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, and_
+from sqlalchemy.orm import selectinload, joinedload, contains_eager
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete, func
@@ -11,36 +12,59 @@ from starlette import status
 
 from core.base import Base
 
-from sections.models import Section, Achievement
+from sections.models import Section, Achievement, Image
 
 
 async def read_achievements(session, section_id):
-    query = select(Section).where(Section.id == section_id).options(selectinload(Section.achievements))
+    query = (
+        select(Section)
+        .join(Achievement, Section.id == Achievement.section_id)
+        .outerjoin(
+            Image,
+            (Image.entity_id == Achievement.id) & (Image.entity_name == Achievement.table_name)
+        )
+        .options(
+            contains_eager(Section.achievements)  # Загружаем achievements
+        )
+        .where(Section.id == section_id)
+        .order_by(Section.id, Achievement.order_value)
+    )
     result = await session.execute(query)
-    achievement = result.scalars().first()
-    return achievement
+    achievements = result.scalars().first()
+    return achievements
 
 
-async def update_achievement(id, update_data, session):
-    # Получаем объект из базы
-    achievement = await session.get(Achievement, id)
-    if not achievement:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Achievement {id} не найден"
-        )
-    # Обновляем только переданные поля
-    update_data_dict = update_data.model_dump(exclude_unset=True)
-    for key, value in update_data_dict.items():
-        setattr(achievement, key, value)
-    try:
-        await session.commit()
-        await session.refresh(achievement)
-        logger.info(f"Успешное обновление achievement: {achievement}")
-    except Exception as e:
-        session.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
-    return achievement
+async def read_images(session, entity_name):
+    images_query = select(Image).where(Image.entity_name == entity_name)
+    pass
+
+    # if section:
+    #     # Группируем изображения по achievement_id
+    #     achievement_images = {}
+    #     for achievement in section.achievements:
+    #         achievement_images[achievement.id] = []
+
+    #     # Загружаем изображения для всех achievements
+    #     image_stmt = (
+    #         select(Image)
+    #         .where(
+    #             (Image.entity_name == "achievements") &
+    #             (Image.entity_id.in_([a.id for a in section.achievements]))
+    #         )
+    #     )
+    #     image_result = await session.execute(image_stmt)
+    #     images = image_result.scalars().all()
+
+    #     # Сопоставляем изображения с achievements
+    #     for image in images:
+    #         if image.entity_id in achievement_images:
+    #             achievement_images[image.entity_id].append(image)
+
+    #     # Присваиваем изображения каждому achievement
+    #     for achievement in section.achievements:
+    #         achievement.images = achievement_images.get(achievement.id, [])
+
+    #     section.achievements.sort(key=lambda x: x.order_value)  # Сортируем achievements
+    #     logger.info(section)
+
+    # return section

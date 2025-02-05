@@ -53,22 +53,24 @@ async def get_current_user(
 ) -> User:
     # logger.info(f"Проверяем access_token и возвращаем пользователя.")
     try:
-        # Декодируем токен
-        payload = decode_jwt(token=token)
+        payload = decode_jwt(token=token) # Декодируем токен
     except ExpiredSignatureError:
         raise exc.token_expired
     except PyJWTError:
-        # Общая ошибка для токенов
-        raise exc.invalid_jwt
+        raise exc.invalid_jwt # Общая ошибка для токенов
+    
     expire: str = payload.get('exp')
     expire_time = datetime.fromtimestamp(int(expire), tz=timezone.utc)
     # logger.info(f"Проверяем срок годности токена: истекает - {expire_time} текущее время - {datetime.now(timezone.utc)}")
     if (not expire) or (expire_time < datetime.now(timezone.utc)):
         raise exc.token_expired
+    
     user_id: str = payload.get('sub')
     if not user_id:
         raise exc.user_id_not_found
+    
     user = await UsersDAO(session).find_one_or_none_by_id(data_id=int(user_id))
     if not user:
         raise exc.user_not_found
+    
     return user

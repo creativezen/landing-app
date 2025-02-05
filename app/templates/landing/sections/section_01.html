@@ -1,26 +1,41 @@
-<!-- Главный экран  -->
-<section id="hero" class="hero">
-    <div class="background-hero"></div>
+<!-- Основные достиженияи  -->
+<section class="section stream achievements">
     <div class="container">
-        <div class="hero__content">
+        <div class="section__header">
+            <h2 class="title">{{ section_achievements.title }}</h2>
+        </div>
+        <div class="section__body">
             <div class="grid-group">
+                {% for achievement in section_achievements.achievements %}
                 <div class="grid-child" data-grid="4">
-                    <h1 class="title-hero regular white">Национальная приводная компания</h1>
+                    <div class="card-column border-left auto">
+                        <div>
+                            {% if achievement.image_desktop and not achievement.image_mobile %}
+                                <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
+                            {% endif %}
+                            {% if achievement.image_desktop and achievement.image_mobile %}
+                                <picture>
+                                    <source media="(max-width: 780px)" srcset="{{ achievement.image_mobile }} 1x" type="image/jpg">
+                                    <source media="(min-width: 781px)" srcset="{{ achievement.image_desktop }} 1x" type="image/jpg">
+                                    <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
+                                </picture>
+                            {% endif %}
+                            {% if achievement.image_mobile and not achievement.image_desktop %}
+                                <picture>
+                                    <source media="(max-width: 780px)" srcset="{{ achievement.image_mobile }} 1x" type="image/jpg">
+                                    <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
+                                </picture>
+                            {% endif %}
+                        </div>
+                        <div class="card-column__header">
+                            <h4>{{ achievement.title }}</h4>
+                        </div>
+                        <div class="card-column__body">
+                            <p>{{ achievement.description }}</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="grid-child" data-grid="4">
-                    <p>C момента своего основания НПК определила амбициозную миссию — предоставление передовых технологических решений, которые не только соответствуют высоким стандартам качества, но и полностью удовлетворяют потребности клиентов.</p>
-                </div>
-                <div class="grid-child" data-grid="4">
-                    <p>Компания ставит перед собой задачу стать надежным партнером для промышленных предприятий, предлагая не только высококачественные продукты, но и комплексную поддержку на всех этапах взаимодействия — от выбора оборудования до его обслуживания.</p>
-                </div>
-            </div>
-            <div class="hero__footer">
-                <button class="button link">
-                    <span>подробнее</span>
-                    <svg viewBox="0 0 26 26" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M20.7146 23.0511L0.277344 2.61382L2.16729 0.723877L22.6046 21.1611L22.6045 6.56889L25.2773 6.56889L25.2773 25.7239L6.12239 25.7238L6.1224 23.051L20.7146 23.0511Z" />
-                    </svg>
-                </button>
+                {% endfor %}
             </div>
         </div>
     </div>

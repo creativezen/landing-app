@@ -29,7 +29,7 @@ class AuthJWT(BaseModel):
     private_key: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key: Path = BASE_DIR / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
-    token_expire_minutes: int = 20
+    token_expire_minutes: int = 60
     token_expire_days: int = 30
 
 
@@ -50,9 +50,14 @@ class DatabaseConfig(BaseModel):
     
 
 class FilesConfig(BaseModel):
+    base_dir: Path = BASE_DIR
     static_files: str = "static"
+    image_files: str = "static/landing/uploads/images"
     landing_templates: str = "templates/landing"
     admin_templates: str = "templates/admin"
+    allowed_image_types: list[str] = ["image_desktop", "image_mobile"]
+    allowed_image_formats: list[str] = ["image/jpeg", "image/png", "image/svg+xml", "image/webp"]
+    alloewd_image_actions: list[str] = ["image_delete", "image_refresh"]
 
 
 class Settings(BaseSettings):

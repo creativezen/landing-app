@@ -1,28 +1,158 @@
 <!-- Основные достиженияи  -->
-<form class="section stream achievements" data-section="1">
+<section class="section stream achievements" data-table="sections" data-id="{{ section_achievements.id }}">
     <div class="container">
-        <fieldset class="section__header">
-            <textarea name="section" id="section_01" class="title">{{ section_achievements.title }}</textarea>
-        </fieldset>
+        <div class="section__header">
+            <div data-field="title" class="title" contenteditable="true">
+                {% if section_achievements.title %} {{ section_achievements.title }}
+                {% else %} <small>Здесь пока пусто...</small>
+                {% endif %}
+            </div>
+        </div>
         <div class="section__body">
             <div class="grid-group">
                 {% for achievement in section_achievements.achievements %}
-                <fieldset class="grid-child" data-grid="4" data-table="achievements" data-id={{ achievement.id }}>
+                <div class="grid-child" data-grid="4" data-table="{{ achievement.table_name }}" data-id="{{ achievement.id }}">
                     <div class="card-column border-left auto">
+                        <!-- Форма для загрузки изображения -->
+                        {% if not achievement.image_desktop or not achievement.image_mobile %}
+                            <div class="attach-images">
+                                <form class="js-upload-image" enctype="multipart/form-data">
+                                    <fieldset>
+                                        {% if not achievement.image_desktop %}
+                                            <label for="image_desktop">
+                                                <input type="radio" name="image_type" value="image_desktop" checked>
+                                                <small>Тип ПК</small>
+                                            </label>
+                                        {% endif %}
+                                        {% if not achievement.image_mobile %}
+                                            <label for="image_mobile">
+                                                {% if achievement.image_desktop %}
+                                                    <input type="radio" name="image_type" value="image_mobile" checked>
+                                                    {% else %} <input type="radio" name="image_type" value="image_mobile">
+                                                {% endif %}
+                                                <small>Тип Мобильные</small>
+                                            </label>
+                                        {% endif %}
+                                            <label for="image">
+                                                <input type="file" name="image" accept="image/jpeg, image/png, image/svg+xml, image/webp">
+                                            </label>
+                                    </fieldset>
+                                    <button type="submit">Сохранить</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                        <!-- Блок для отображения прикрепленных изображений -->
+                        <div class="attached-images">
+                            {% if achievement.image_desktop or achievement.image_mobile %}
+                                <div class="js-image-alt">
+                                    <small>Зачение атрибута alt</small>
+                                    <div data-field="image_alt" contenteditable="true">
+                                        {% if achievement.image_alt %} {{ achievement.image_alt }}
+                                        {% else %} alt не указан
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if achievement.image_desktop %}
+                                <figure>
+                                    <img loading="lazy" src="{{ achievement.image_desktop }}">
+                                    <figcaption>Картинка ПК</figcaption>
+                                </figure>
+                                <button 
+                                    class="js-update-image"
+                                    data-type="image_desktop"
+                                    data-action="image_delete"
+                                    data-src="{{ achievement.image_desktop }}">Удалить
+                                </button>
+                                <button 
+                                    class="js-update-image"
+                                    data-type="image_desktop"
+                                    data-action="image_refresh"
+                                    data-src="{{ achievement.image_desktop }}">Заменить
+                                </button>
+                            {% endif %}
+                            {% if achievement.image_mobile %}
+                                <figcaption>
+                                    <img loading="lazy" src="{{ achievement.image_mobile }}">
+                                    <figcaption>Картинк для Мобильных</figcaption>
+                                </figcaption>
+                                <button
+                                    class="js-update-image"
+                                    data-type="image_mobile"
+                                    data-action="image_delete"
+                                    data-src="{{ achievement.image_mobile }}">Удалить
+                                </button>
+                                <button
+                                    class="js-update-image"
+                                    data-type="image_mobile"
+                                    data-action="image_refresh"
+                                    data-src="{{ achievement.image_mobile }}">Заменить
+                                </button>
+                            {% endif %}
+                        </div>
                         <div class="card-column__header">
-                            <div name="title" data-field="title" contenteditable="true">{{ achievement.title }}</div>
+                            <div data-field="title" contenteditable="true">
+                                {% if achievement.title %} {{ achievement.title }}
+                                {% else %} <small>Здесь пока пусто...</small>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="card-column__body">
-                            <div name="description" data-field="description" contenteditable="true">{{ achievement.description }}</div>
+                            <div data-field="description" contenteditable="true">
+                                {% if achievement.description %} {{ achievement.description }}
+                                {% else %} <small>Здесь пока пусто...</small>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </fieldset>
+                </div>
                 {% endfor %}
             </div>
+            <button class="button js-add-instance" data-table="achievements">Добавить экземпляр</button>
         </div>
-        <!-- <div class="section__footer">
-            <button class="button" type="submit">Сохранить</button>
-        </div> -->
+        <div class="section__footer">
+        </div>
     </div>
-</form>
+</section>
 
+<style>
+    .attach-images fieldset {
+        display: flex;
+        flex-direction: column;
+    }
+    .attached-images img {
+        width: 260px;
+        height: 260px;
+        object-fit: cover;
+        object-position: 50%;
+        overflow: hidden;
+    }
+    input[type="text"] {
+        background-color: gainsboro;
+    }
+    [type="submit"] {
+        padding: 0.6em;
+        background-color: var(--blue);
+        border-radius: 0.5em;
+        font-size: 0.8em;
+        color: white;
+    }
+    [contenteditable="true"] {
+        padding: 0.4em;
+        border: 1px solid burlywood;
+        background-color: #f2f2f2;
+    }
+    [contenteditable="true"]:focus {
+        padding: 0.4em;
+        border: 1px solid var(--blue);
+        background-color: white;
+    }
+    .admin .button {
+        padding-inline: 1.4em;
+        font-size: 1em;
+    }
+
+    .admin .button:hover {
+        background-color: var(--black);
+    }
+</style>
