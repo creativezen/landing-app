@@ -66,13 +66,13 @@ window.addEventListener('DOMContentLoaded', function(e){
 
             payload.section_id = Number(currentButton.closest('[data-table="sections"]').dataset.id)
             payload.table_name = currentButton.dataset.table
-            payload.title = ''
-            payload.description = ''
-            payload.image_desktop = ''
-            payload.image_mobile = ''
-            payload.image_alt = ''
-            payload.button_text = ''
-            payload.button_url = ''
+            payload.title = null
+            payload.description = null
+            payload.image_desktop = null
+            payload.image_mobile = null
+            payload.image_alt = null
+            payload.button_text = null
+            payload.button_url = null
             payload.order_value = 0
 
             console.log(payload)
