@@ -12,7 +12,7 @@ from users.models import User
 from core import db_helper as db
 from core.config import settings
 
-from crud.achievements import read_achievements
+from crud.achievements import read_sections
 from crud.sections import create_instance, update_content, add_img, update_image
 from sections.schemas import AchievementCardUpdate, AchievementCardCreate, SectioTitleUpdate, ImageUpdate
 from sections.models import models_map
@@ -32,15 +32,22 @@ async def get_admin(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(db.get_session_without_commit)
 ):
-    section_achievements = await read_achievements(session=session, section_id=1)
-    # logger.info(f"Получены данные секции archievements: {section_achievements}")
-    return admin.TemplateResponse(
-        "index.html",  # Имя шаблона
-        {
-            "request": request,
-            "section_achievements": section_achievements,
-        }  # Контекст с передачей request
-    )
+    entities = [
+        "achievements",
+    ]
+    sections = {
+        "request": request,
+    }
+    for entity in entities:
+        section = await read_sections(
+            section_id=1,
+            entity_name=entity,
+            session=session,
+        )
+        sections.update({"section": section})
+        logger.info(f"Получены данные секции {entity}: {section}")
+    
+    return admin.TemplateResponse("index.html", sections,)
     
     
 # Добавить новую запись

@@ -6,7 +6,7 @@ from loguru import logger
 
 from core import db_helper as db
 from core.config import settings
-from crud.achievements import read_achievements
+from crud.achievements import read_sections
 
 # Инициализация Jinja2Templates с указанием директории шаблонов
 landing = Jinja2Templates(directory=settings.files.landing_templates)
@@ -20,15 +20,20 @@ async def render_landing(
     request: Request,
     session: AsyncSession = Depends(db.get_session_without_commit)
 ):
-    # Получаем данные для всех блоков
-    section_achievements = await read_achievements(session=session, section_id=1)
-    logger.info(f"Получены данные секции archievements: {section_achievements}")
+    entities = [
+        "achievements",
+    ]
+    sections = {
+        "request": request,
+    }
+    for entity in entities:
+        section = await read_sections(
+            section_id=1, 
+            entity_name=entity,
+            session=session
+        )
+        sections.update({"section": section})
+        logger.info(f"Получены данные секции {entity}: {section}")
     
     # Рендеринг HTML с данными
-    return landing.TemplateResponse(
-        "index.html",  # Имя шаблона
-        {
-            "request": request,
-            "section_achievements": section_achievements,
-        }  # Контекст с передачей request
-    )
+    return landing.TemplateResponse("index.html", sections)
