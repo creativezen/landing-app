@@ -35,6 +35,11 @@ class AchievementCardCreate(BaseModel):
     order_value: int | None = None
     
     
+class AchievementCardDelete(BaseModel):
+    id: int = Field(description="id записи - обязательное поле")
+    table_name: str = Field(description="название таблицы - обязательное поле")
+    
+    
 # Валидция для добавления картинок
 class ImageSave(BaseModel):
     # id: int = Field(description="id картинки - обязательное поле")

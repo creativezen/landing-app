@@ -37,7 +37,7 @@
                                                 <input type="file" name="image" accept="image/jpeg, image/png, image/svg+xml, image/webp">
                                             </label>
                                     </fieldset>
-                                    <button type="submit">Сохранить</button>
+                                    <button class="button small" type="submit">Сохранить</button>
                                 </form>
                             </div>
                         {% endif %}
@@ -104,12 +104,15 @@
                                 {% endif %}
                             </div>
                         </div>
+                        <div class="card-column__footer">
+                            <button class="button small red js-delete-instance">Удалить карточку</button>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
                 <div class="grid-child" data-grid="4">
                     <div class="card-column auto">
-                        <button class="button js-add-instance" data-table="achievements">Добавить экземпляр</button>
+                        <button class="button add-instance js-add-instance" data-table="achievements">Добавить экземпляр</button>
                     </div>
                 </div>
             </div>
@@ -135,11 +138,7 @@
         background-color: gainsboro;
     }
     [type="submit"] {
-        padding: 0.6em;
-        background-color: var(--blue);
-        border-radius: 0.5em;
-        font-size: 0.8em;
-        color: white;
+        
     }
     [contenteditable="true"] {
         padding: 0.4em;
@@ -152,11 +151,33 @@
         background-color: white;
     }
     .admin .button {
+        height: auto;
         padding-inline: 1.4em;
+        border-radius: 0.4em;
+        background-color: var(--blue);
         font-size: 1em;
     }
-
     .admin .button:hover {
         background-color: var(--black);
     }
+    .admin .button.medium {
+        font-size: 14px;
+        padding: 1.4em;
+    }
+    .admin .button.small {
+        padding: 0.6em;
+        font-size: 0.8em;
+    }
+    .admin .button.red {
+        background-color: #f27474;
+    }
+    .admin .button.add-instance {
+        height: 290px;
+        background-color: #f2f2f2;
+        color: var(--black);
+    }
+    .admin .button.add-instance:hover {
+        background-color: #e3e3e3;
+    }
+    
 </style>

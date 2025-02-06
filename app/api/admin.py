@@ -22,10 +22,11 @@ from core import db_helper as db
 from core.config import settings
 
 from crud.achievements import read_sections
-from crud.sections import create_instance, update_content, add_img, update_image
+from crud.sections import create_instance, update_content, add_img, update_image, delete_instance
 from sections.schemas import (
     AchievementCardUpdate,
     AchievementCardCreate,
+    AchievementCardDelete,
     SectioTitleUpdate,
     ImageUpdate,
 )
@@ -74,7 +75,7 @@ async def get_admin(
     )
 
 
-# Добавить новую запись
+# Добавить новую запись к вложенной в секцию сущности
 @router.post("/sections/{entity_name}")
 async def new_istance(
     entity_name: str,
@@ -83,6 +84,20 @@ async def new_istance(
 ):
     return await create_instance(
         entity_name=entity_name, 
+        payload=payload,
+        session=session
+    )
+    
+    
+# Удалить запись из вложенной в секцию сущности
+@router.delete("/sections/{table_name}")
+async def remove_instance(
+    table_name: str,
+    payload: AchievementCardDelete,
+    session: AsyncSession = Depends(db.get_session_without_commit)
+):
+    return await delete_instance(
+        table_name=table_name,
         payload=payload,
         session=session
     )

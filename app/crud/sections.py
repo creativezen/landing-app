@@ -1,15 +1,22 @@
 import os
-import aiofiles.os as aios
 import uuid
 from fastapi import HTTPException, status
 from loguru import logger
-from sqlalchemy import update, func
+from sqlalchemy import select, update, func, delete
 
-from sections.models import models_map, Achievement
+from sections.models import models_map
 from core.config import settings
 
 
 async def create_instance(entity_name, payload, session):
+    """Создание записи
+    Args:
+        entity_name (str): название таблицы
+        payload (str): данные для создания записи
+        session (AsyncSession): текущая сессия
+    Returns:
+        object: new_instance
+    """
     model = models_map[entity_name]
     new_instance = model(**payload.dict())
     # получим текущее максимальное значение order_value
@@ -23,7 +30,47 @@ async def create_instance(entity_name, payload, session):
     return new_instance
 
 
+async def delete_instance(table_name, payload, session):
+    """Удаление записи
+    Args:
+        table_name (str): название таблицы
+        payload (dict): данные для получения таблицы
+        session (AsyncSession): текущая сессия
+    Returns:
+        success: "message"
+    """
+    model = models_map[table_name]
+    try:
+        # заберем из записи картинки
+        query = select(model.image_desktop, model.image_mobile).where(model.id == payload.id)
+        result = await session.execute(query)
+        images_list = result.one_or_none()
+        # пробежимся по картинкам и удалим каждую с диска
+        for image in images_list:
+            logger.info(f"Файл {image} передается на удаление...")
+            await delete_image(image)
+        # после удаления картинок удалим саму запись
+        query = delete(model).where(model.id == payload.id)
+        await session.execute(query)
+        await session.commit()
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    return {"message": "Экземпляр был успешно удален!"}
+    
+
+
 async def get_order_value(model, session) -> int:
+    """Получение последнего порядкового номера среди записей
+    Args:
+        model (model): таблица
+        session (_type_): текущая сессия
+    Returns:
+        int: текущее значение или 0
+    """
     max_value = await session.execute(
         func.max(model.order_value)
     )
@@ -32,7 +79,7 @@ async def get_order_value(model, session) -> int:
 
 
 async def update_content(id, payload, session):
-    """Обновляем контет записи
+    """Обновляем запись
     Args:
         id (int): ID записи
         payload (dict): новые данные
@@ -40,12 +87,6 @@ async def update_content(id, payload, session):
     Returns:
         entity: обновленная запись
     """
-    logger.info(f"Сессия: {session}")
-    if session is None:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Сессия не была установлена."
-        )
     model = models_map[payload.table]
     logger.info(f"Обовляем данные модели: {model}")
     # Получаем объект из базы
@@ -58,9 +99,10 @@ async def update_content(id, payload, session):
     # Обновляем только переданные поля
     payload_dict = payload.model_dump(exclude_unset=True)
     for key, value in payload_dict.items():
-        # проверяем значение на пустую строку
+        # проверяем значение на его отсутствие
         if isinstance(value, str) and value.strip() == "":
             value = None
+        # производим запись данных
         setattr(entity, key, value)
     try:
         await session.commit()
@@ -86,12 +128,6 @@ async def add_img(image, image_type, entity_name, entity_id, session,):
     Returns:
         success: {"message": ...}
     """
-    logger.info(f"Сессия: {session}")
-    if session is None:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Сессия не была установлена."
-        )
     image_url = await save_image(
         image=image,
         image_type=image_type,
@@ -117,19 +153,18 @@ async def add_img(image, image_type, entity_name, entity_id, session,):
     return {"message": "Изображение успешно сохранено", image_type: field}
 
 
-async def save_image(image, image_type, entity_name):
+async def save_image(image, image_type, entity_name) -> str:
     """Сохраняем картинку
     Args:
         image (UploadFile): бинарник картинки
         image_type (str): тип картинки ("desktop", "mobile")
         entity_name (str): название таблицы/сущности
     Returns:
-        dict: {"message": ""}
+        str: path
     """
     # Записываем изображение на диск и генерируем ссылку на него
     allowed_types = settings.files.allowed_image_types
     allowed_formats = settings.files.allowed_image_formats
-    
     if image is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -169,8 +204,8 @@ async def save_image(image, image_type, entity_name):
             detail="Ошибка при чтении файла."
         )
     # Генерация URL для изображения
-    image_url = f"/{settings.files.image_files}/{entity_name}/{unique_filename}"
-    return image_url
+    image_path = f"/{settings.files.image_files}/{entity_name}/{unique_filename}"
+    return image_path
 
 
 async def delete_image(file_location: str):
@@ -180,10 +215,13 @@ async def delete_image(file_location: str):
     Returns:
         success: "message"
     """
+    if file_location == None or file_location == '':
+        return
+    # получаем абсолютный путь к файлу
     file_location = os.path.join(settings.files.base_dir, file_location.lstrip("/"))
-    logger.info(f"{file_location}")
+    # logger.info(f"{file_location}")
     try:
-        # Проверяем, существует ли файл
+        # Проверяем, существует ли файл или директория
         if os.path.exists(file_location):
             # Удаляем файл
             os.remove(file_location)
@@ -201,12 +239,16 @@ async def delete_image(file_location: str):
     return {"message": "Картинка успешно удалена!"}
 
 
-async def update_image(
-    entity_id,
-    entity_name,
-    payload, 
-    session,
-):
+async def update_image(entity_id, entity_name, payload, session,):
+    """Замена или удаление картинки
+    Args:
+        entity_id (int): ID записи
+        entity_name (str): название таблицы
+        payload (dict): данные для обновления
+        session (AsyncSession): текущая сессия
+    Returns:
+        success: "message"
+    """
     action = payload.image_action
     if action not in settings.files.alloewd_image_actions:
         raise HTTPException(
@@ -225,7 +267,7 @@ async def update_image(
             return {"message": "Изображение успешно удалено"}
         if action == 'image_refresh':
             return
-            # TODO: реализовать логику замены картинки на нову
+            # TODO: реализовать логику замены картинки на новую
             # uploaded_img = await add_img(
             #     image=image,
             #     image_type=image_type,
@@ -244,3 +286,4 @@ async def update_image(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+    return {"message": "Операция по изменению картинки завершена успешно!"}

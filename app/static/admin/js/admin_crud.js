@@ -86,12 +86,37 @@ window.addEventListener('DOMContentLoaded', function(e){
                     body: JSON.stringify(payload),
                 })
                 const result = await response.json()
-                if (!response.ok) {
-                    throw new Error(`Произошла ошибка при создании экземпляра в сущности ${payload.table_name}`)
-                }
                 console.log('Обновленно успешно!', result)
             } catch (error) {
                 alert('Ошибка при создании экземпляра: ' + error.message)
+            }
+        })
+    })
+
+    // Удаление экземпляра
+    document.querySelectorAll('.js-delete-instance').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault()
+
+            const currentButton = e.target
+            const payload = {}
+            payload.id = currentButton.closest('[data-id]').dataset.id
+            payload.table_name = currentButton.closest('[data-table]').dataset.table
+
+            console.log(payload)
+
+            try {
+                const response = await fetch(`http://0.0.0.0:8000/admin/sections/${payload.table_name}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                })
+                const result = await response.json()
+                console.log("Экземпляр успешно удален!", result)
+            } catch (error) {
+                alert("Произошла ошибка при удалении экземпляра:", error.message)                
             }
         })
     })
