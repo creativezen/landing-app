@@ -7,34 +7,38 @@
         <div class="section__body">
             <div class="grid-group">
                 {% for achievement in section_achievements.achievements %}
-                <div class="grid-child" data-grid="4">
-                    <div class="card-column border-left auto">
-                        <div>
-                            {% if achievement.image_desktop and not achievement.image_mobile %}
-                                <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
-                            {% endif %}
-                            {% if achievement.image_desktop and achievement.image_mobile %}
-                                <picture>
-                                    <source media="(max-width: 780px)" srcset="{{ achievement.image_mobile }} 1x" type="image/jpg">
-                                    <source media="(min-width: 781px)" srcset="{{ achievement.image_desktop }} 1x" type="image/jpg">
+                    {% if achievement.title or achievement.description or achievement.image_desktop %}
+                    <div class="grid-child" data-grid="4">
+                        <div class="card-column border-left auto">
+                            <div>
+                                {% if achievement.image_desktop and not achievement.image_mobile %}
                                     <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
-                                </picture>
-                            {% endif %}
-                            {% if achievement.image_mobile and not achievement.image_desktop %}
-                                <picture>
-                                    <source media="(max-width: 780px)" srcset="{{ achievement.image_mobile }} 1x" type="image/jpg">
-                                    <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
-                                </picture>
-                            {% endif %}
-                        </div>
-                        <div class="card-column__header">
-                            <h4>{{ achievement.title }}</h4>
-                        </div>
-                        <div class="card-column__body">
-                            <p>{{ achievement.description }}</p>
+                                {% endif %}
+                                {% if achievement.image_desktop and achievement.image_mobile %}
+                                    <picture>
+                                        <source media="(max-width: 780px)" srcset="{{ achievement.image_mobile }} 1x" type="image/jpg">
+                                        <source media="(min-width: 781px)" srcset="{{ achievement.image_desktop }} 1x" type="image/jpg">
+                                        <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
+                                    </picture>
+                                {% endif %}
+                                {% if achievement.image_mobile and not achievement.image_desktop %}
+                                    <picture>
+                                        <source media="(max-width: 780px)" srcset="{{ achievement.image_mobile }} 1x" type="image/jpg">
+                                        <img loading="lazy" src="{{ achievement.image_desktop }}" alt="{{ achievement.image_alt }}">
+                                    </picture>
+                                {% endif %}
+                            </div>
+                            <div class="card-column__header">
+                                {% if achievement.title %} <h4>{{ achievement.title }}</h4>
+                                {% endif %}
+                            </div>
+                            <div class="card-column__body">
+                                {% if achievement.description %} <p>{{ achievement.description }}</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
