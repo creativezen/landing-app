@@ -1,5 +1,14 @@
 import uuid
-from fastapi import APIRouter, Request, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi import (
+    APIRouter,
+    Request,
+    Depends,
+    HTTPException,
+    UploadFile,
+    File,
+    Form,
+    status,
+)
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
@@ -14,7 +23,12 @@ from core.config import settings
 
 from crud.achievements import read_sections
 from crud.sections import create_instance, update_content, add_img, update_image
-from sections.schemas import AchievementCardUpdate, AchievementCardCreate, SectioTitleUpdate, ImageUpdate
+from sections.schemas import (
+    AchievementCardUpdate,
+    AchievementCardCreate,
+    SectioTitleUpdate,
+    ImageUpdate,
+)
 from sections.models import models_map
 
 
@@ -25,71 +39,77 @@ admin = Jinja2Templates(directory=settings.files.admin_templates)
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
+# TODO: перенести куда-то и сделать модулем
+entities_map = {
+    "achievements": 1,
+}
+
+
 # Чтение всех секций
 @router.get("/", response_class=HTMLResponse)
 async def get_admin(
     request: Request,
     user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(db.get_session_without_commit)
+    session: AsyncSession = Depends(db.get_session_without_commit),
 ):
+    # TODO: сделать функцию модульной
     entities = [
-        "achievements",
+        {"name": section_name, "id": section_id}
+        for section_name, section_id in entities_map.items()
     ]
     sections = {
         "request": request,
     }
     for entity in entities:
         section = await read_sections(
-            section_id=1,
-            entity_name=entity,
+            section_id=entity["id"],
+            entity_name=entity["name"],
             session=session,
         )
         sections.update({"section": section})
         logger.info(f"Получены данные секции {entity}: {section}")
-    
-    return admin.TemplateResponse("index.html", sections,)
-    
-    
+    return admin.TemplateResponse(
+        "index.html",
+        sections,
+    )
+
+
 # Добавить новую запись
 @router.post("/sections/{entity_name}")
 async def new_istance(
     entity_name: str,
     payload: AchievementCardCreate,
-    session: AsyncSession = Depends(db.get_session_without_commit)
-): 
+    session: AsyncSession = Depends(db.get_session_without_commit),
+):
     return await create_instance(
-        entity_name=entity_name,
-        payload=payload, 
+        entity_name=entity_name, 
+        payload=payload,
         session=session
     )
-    
+
 
 # ресурс на изменение секции: заголовок, подзаголовок, кнопка
 @router.patch("/sections/{id}")
 async def patch_section(
     id: int,
     payload: SectioTitleUpdate,
-    session: AsyncSession = Depends(db.get_session_with_commit)
+    session: AsyncSession = Depends(db.get_session_with_commit),
 ):
     return await update_content(
         id=id,
         payload=payload,
         session=session,
     )
-    
+
 
 # ресурс на изменение карточек в секции id=achievemtns
 @router.patch("/achievements/{id}")
 async def update_achievement(
     id: int,
     payload: AchievementCardUpdate,
-    session: AsyncSession = Depends(db.get_session_with_commit)
+    session: AsyncSession = Depends(db.get_session_with_commit),
 ):
-    return await update_content(
-        id=id,
-        payload=payload,
-        session=session
-    )
+    return await update_content(id=id, payload=payload, session=session)
 
 
 # ресурс на добавление картинки
@@ -116,11 +136,11 @@ async def action_img(
     entity_id: int,
     entity_name: str,
     payload: ImageUpdate,
-    session: AsyncSession = Depends(db.get_session_without_commit)
+    session: AsyncSession = Depends(db.get_session_without_commit),
 ):
     return await update_image(
         entity_id=entity_id,
         entity_name=entity_name,
-        payload=payload, 
+        payload=payload,
         session=session
     )
