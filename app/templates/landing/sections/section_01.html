@@ -2,11 +2,11 @@
 <section class="section stream achievements">
     <div class="container">
         <div class="section__header">
-            <h2 class="title">{{ section_achievements.title }}</h2>
+            <h2 class="title">{{ section.title }}</h2>
         </div>
         <div class="section__body">
             <div class="grid-group">
-                {% for achievement in section_achievements.achievements %}
+                {% for achievement in section.achievements %}
                     {% if achievement.title or achievement.description or achievement.image_desktop %}
                     <div class="grid-child" data-grid="4">
                         <div class="card-column border-left auto">

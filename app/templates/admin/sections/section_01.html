@@ -1,16 +1,16 @@
 <!-- Основные достиженияи  -->
-<section class="section stream achievements" data-table="sections" data-id="{{ section_achievements.id }}">
+<section class="section stream achievements" data-table="sections" data-id="{{ section.id }}">
     <div class="container">
         <div class="section__header">
             <div data-field="title" class="title" contenteditable="true">
-                {% if section_achievements.title %} {{ section_achievements.title }}
+                {% if section.title %} {{ section.title }}
                 {% else %} <small>Здесь пока пусто...</small>
                 {% endif %}
             </div>
         </div>
         <div class="section__body">
             <div class="grid-group">
-                {% for achievement in section_achievements.achievements %}
+                {% for achievement in section.achievements %}
                 <div class="grid-child" data-grid="4" data-table="{{ achievement.table_name }}" data-id="{{ achievement.id }}">
                     <div class="card-column border-left auto">
                         <!-- Форма для загрузки изображения -->
