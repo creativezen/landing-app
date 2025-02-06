@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.future import select
+from loguru import logger
 
 
 
@@ -9,6 +10,7 @@ from sections.models import Section, Achievement, models_map
 
 
 async def read_sections(section_id: int, entity_name: str, session: AsyncSession):
+    logger.info(f"ID запрашиваемой секции: {section_id}")
     model = models_map[entity_name]
     relation_entity = getattr(Section, entity_name)
     query = (
