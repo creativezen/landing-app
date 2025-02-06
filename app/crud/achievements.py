@@ -1,31 +1,18 @@
-from typing import List, TypeVar, Generic, Type, Optional
-from pydantic import BaseModel
-from sqlalchemy import select, and_
-from sqlalchemy.orm import selectinload, joinedload, contains_eager
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import select
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.future import select
-from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete, func
-from fastapi import HTTPException, Request, Depends
-from loguru import logger
-from starlette import status
 
 
-from core.base import Base
 
-from sections.models import Section, Achievement, Image
+from sections.models import Section, Achievement
 
 
 async def read_achievements(session, section_id):
     query = (
         select(Section)
         .join(Achievement, Section.id == Achievement.section_id)
-        .outerjoin(
-            Image,
-            (Image.entity_id == Achievement.id) & (Image.entity_name == Achievement.table_name)
-        )
-        .options(
-            contains_eager(Section.achievements)  # Загружаем achievements
-        )
+        # Загружаем achievements
+        .options(contains_eager(Section.achievements))
         .where(Section.id == section_id)
         .order_by(Section.id, Achievement.order_value)
     )
@@ -34,9 +21,9 @@ async def read_achievements(session, section_id):
     return achievements
 
 
-async def read_images(session, entity_name):
-    images_query = select(Image).where(Image.entity_name == entity_name)
-    pass
+# async def read_images(session, entity_name):
+#     images_query = select(Image).where(Image.entity_name == entity_name)
+#     pass
 
     # if section:
     #     # Группируем изображения по achievement_id

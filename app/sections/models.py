@@ -34,15 +34,6 @@ class Achievement(Card):
     section: Mapped["Section"] = relationship("Section", back_populates="achievements", lazy="joined")
     
     
-class Image(Base):
-    __tablename__ = 'images'
-
-    image_name: Mapped[str] = mapped_column(String, nullable=True)
-    image_url: Mapped[str] = mapped_column(String, nullable=False, default="")
-    entity_name: Mapped[str] = mapped_column(String, nullable=False)
-    entity_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    
-    
 models_map = {
     'sections': Section,
     'achievements': Achievement,
