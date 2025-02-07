@@ -21,7 +21,7 @@ from users.models import User
 from core import db_helper as db
 from core.config import settings
 
-from crud.achievements import read_sections
+from crud.sections import read_sections
 from crud.sections import create_instance, update_content, add_img, update_image, delete_instance
 from sections.schemas import (
     AchievementCardUpdate,
