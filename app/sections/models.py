@@ -21,7 +21,12 @@ class Section(Base):
     # Связь с Achievement
     achievements: Mapped[List["Achievement"]] = relationship(
         "Achievement", 
-        back_populates="section", 
+        back_populates="sections", 
+    )
+    # Связь с Product
+    products: Mapped[List["Product"]] = relationship(
+        "Product",
+        back_populates="sections"
     )
     
     
@@ -55,7 +60,7 @@ class Achievement(Card):
     
     table_name: Mapped[str] = mapped_column(String, nullable=True, server_default="achievements")
     section_id: Mapped[int] = mapped_column(ForeignKey('sections.id'))
-    section: Mapped["Section"] = relationship(
+    sections: Mapped["Section"] = relationship(
         "Section", 
         back_populates="achievements", 
         lazy="joined"
@@ -67,9 +72,23 @@ class Achievement(Card):
         back_populates="achievements"
     )
     
+    
+class Product(Card):
+    __tablename__ = "products"
+    
+    table_name: Mapped[str] = mapped_column(String, nullable=True, server_default="products")
+    section_id: Mapped[int] = mapped_column(ForeignKey('sections.id'))
+    sections: Mapped["Section"] = relationship(
+        "Section",
+        back_populates="products",
+        lazy="joined"
+    )
+    
+    
 models_map = {
     'sections': Section,
     'achievements': Achievement,
+    'products': Product,
 }
 
 
