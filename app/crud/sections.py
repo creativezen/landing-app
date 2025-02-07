@@ -1,6 +1,6 @@
 import os
 import uuid
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Request
 from loguru import logger
 from sqlalchemy import select, update, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,17 +10,63 @@ from sections.models import models_map, Section
 from core.config import settings
 
 
+# Сопоставление названий секций с их идентификаторами
+sections_map = {
+    "achievements": 1,
+}
+
+# Получение данных всех секций
+async def get_all(request: Request, session: AsyncSession) -> dict:
+    """Чтение всех секций
+    Args:
+        request (Request): Объект запроса, содержащий информацию о HTTP-запросе.
+        session (AsyncSession): Текущая асинхронная сессия для взаимодействия с базой данных.
+    Returns:
+        dict: Словарь, содержащий данные всех секций.
+    """
+    # Создание списка словарей, где каждый словарь содержит имя секции и её идентификатор
+    sections_list = [
+        {"name": section_name, "id": section_id}
+        for section_name, section_id in sections_map.items()
+    ]
+    # Инициализация словаря, который будет содержать данные секций
+    sections = {
+        "request": request, 
+    }
+    for entity in sections_list:
+        # читаем конкретную секцию
+        section = await read_sections(
+            section_id=entity["id"],
+            entity_name=entity["name"],  
+            session=session,
+        )
+        sections.update({"section": section})
+        logger.info(f"Получены данные секции {entity}: {section}")
+    return sections
+
+
+# Чтение данных конкретной секции
 async def read_sections(section_id: int, entity_name: str, session: AsyncSession):
+    """Чтение данных  таблицы связанной с текущей секцией
+    Args:
+        section_id (int): DI секции
+        entity_name (str): название связанной таблицы
+        session (AsyncSession): текущая сессия
+    Returns:
+        object: все записи найденой таблицы
+    """
     logger.info(f"ID запрашиваемой секции: {section_id}")
+    # Получение модели данных, соответствующей имени секции
     model = models_map[entity_name]
+    # Получение атрибута модели Section, соответствующего имени секции
     relation_entity = getattr(Section, entity_name)
     query = (
-        select(Section)
-        .add_columns(Section.id)
-        .outerjoin(model, Section.id == model.section_id)
-        .options(contains_eager(relation_entity))
-        .where(Section.id == section_id)
-        .order_by(Section.id, model.order_value)
+        select(Section)  # Выборка из таблицы Section
+        .add_columns(Section.id)  # Добавление столбца с идентификатором секции
+        .outerjoin(model, Section.id == model.section_id)  # Внешнее соединение с соответствующей моделью
+        .options(contains_eager(relation_entity))  # Загрузка связанных данных
+        .where(Section.id == section_id)  # Фильтрация по идентификатору секции
+        .order_by(Section.id, model.order_value)  # Сортировка по идентификатору секции и порядковому значению
     )
     result = await session.execute(query)
     relation_data = result.scalars().first()

@@ -21,8 +21,7 @@ from users.models import User
 from core import db_helper as db
 from core.config import settings
 
-from crud.sections import read_sections
-from crud.sections import create_instance, update_content, add_img, update_image, delete_instance
+from crud.sections import get_all, create_instance, update_content, add_img, update_image, delete_instance
 from sections.schemas import (
     AchievementCardUpdate,
     AchievementCardCreate,
@@ -30,7 +29,6 @@ from sections.schemas import (
     SectioTitleUpdate,
     ImageUpdate,
 )
-from sections.models import models_map
 
 
 # Инициализация Jinja2Templates с указанием директории шаблонов
@@ -40,12 +38,6 @@ admin = Jinja2Templates(directory=settings.files.admin_templates)
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-# TODO: перенести куда-то и сделать модулем
-entities_map = {
-    "achievements": 1,
-}
-
-
 # Чтение всех секций
 @router.get("/", response_class=HTMLResponse)
 async def get_admin(
@@ -53,25 +45,9 @@ async def get_admin(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(db.get_session_without_commit),
 ):
-    # TODO: сделать функцию модульной
-    entities = [
-        {"name": section_name, "id": section_id}
-        for section_name, section_id in entities_map.items()
-    ]
-    sections = {
-        "request": request,
-    }
-    for entity in entities:
-        section = await read_sections(
-            section_id=entity["id"],
-            entity_name=entity["name"],
-            session=session,
-        )
-        sections.update({"section": section})
-        logger.info(f"Получены данные секции {entity}: {section}")
     return admin.TemplateResponse(
         "index.html",
-        sections,
+        await get_all(request=request, session=session),
     )
 
 

@@ -13,6 +13,14 @@ class Section(Base):
     achievements: Mapped[List["Achievement"]] = relationship(back_populates="section")
     
     
+class CardBadge(Base):
+    __tablename__ = "badges"
+    
+    title: Mapped[str] = mapped_column(String, nullable=True)
+    card_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    card_table_name: Mapped[int] = mapped_column(Integer, nullable=False)
+    
+    
 class Card(Base):
     __abstract__ = True
     
