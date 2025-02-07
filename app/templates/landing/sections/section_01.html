@@ -4,6 +4,7 @@
         <div class="section__header">
             <h2 class="title">{{ section.title }}</h2>
         </div>
+        {% if section.achievements %}
         <div class="section__body">
             <div class="grid-group">
                 {% for achievement in section.achievements %}
@@ -42,5 +43,6 @@
                 {% endfor %}
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
