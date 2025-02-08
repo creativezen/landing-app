@@ -13,16 +13,20 @@ class SectioTitleUpdate(BaseModel):
 
 # id=achievements
 # Валидация для изменения карточек
-class AchievementCardUpdate(BaseModel):
+class CardUpdate(BaseModel):
     id: int = Field(description="id карточки - обязательное поле")
-    table: str = Field(description="название таблицы - обязательное поле")
+    table_name: str = Field(description="название таблицы - обязательное поле")
     title: str | None = None
     description: str | None = None
+    image_desktop: str | None = None
+    image_mobile: str | None = None
     image_alt: str | None = None
-    order: str | None = None
+    button_text: str | None = None
+    button_url: str | None = None
+    order_value: int | None = None
     
     
-class AchievementCardCreate(BaseModel):
+class CardCreate(BaseModel):
     section_id: int = Field(description="id секции - обязательное поле")
     table_name: str = Field(description="название таблицы - обязательное поле")
     title: str | None = None
@@ -35,7 +39,7 @@ class AchievementCardCreate(BaseModel):
     order_value: int | None = None
     
     
-class AchievementCardDelete(BaseModel):
+class CardDelete(BaseModel):
     id: int = Field(description="id записи - обязательное поле")
     table_name: str = Field(description="название таблицы - обязательное поле")
     
