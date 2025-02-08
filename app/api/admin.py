@@ -21,11 +21,11 @@ from users.models import User
 from core import db_helper as db
 from core.config import settings
 
-from crud.sections import get_all, create_instance, update_content, add_img, update_image, delete_instance
+from crud.sections import read_sections, get_all, create_instance, update_content, add_img, update_image, delete_instance
 from sections.schemas import (
-    AchievementCardUpdate,
-    AchievementCardCreate,
-    AchievementCardDelete,
+    CardUpdate,
+    CardCreate,
+    CardDelete,
     SectioTitleUpdate,
     ImageUpdate,
 )
@@ -55,7 +55,7 @@ async def get_admin(
 @router.post("/sections/{entity_name}")
 async def new_istance(
     entity_name: str,
-    payload: AchievementCardCreate,
+    payload: CardCreate,
     session: AsyncSession = Depends(db.get_session_without_commit),
 ):
     return await create_instance(
@@ -69,7 +69,7 @@ async def new_istance(
 @router.delete("/sections/{table_name}")
 async def remove_instance(
     table_name: str,
-    payload: AchievementCardDelete,
+    payload: CardDelete,
     session: AsyncSession = Depends(db.get_session_without_commit)
 ):
     return await delete_instance(
@@ -94,10 +94,11 @@ async def patch_section(
 
 
 # ресурс на изменение карточек в секции id=achievemtns
-@router.patch("/achievements/{id}")
-async def update_achievement(
+@router.patch("/{table_name}/{id}")
+async def update_card(
     id: int,
-    payload: AchievementCardUpdate,
+    table_name: str,
+    payload: CardUpdate,
     session: AsyncSession = Depends(db.get_session_with_commit),
 ):
     return await update_content(id=id, payload=payload, session=session)
