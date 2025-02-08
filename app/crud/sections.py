@@ -13,6 +13,7 @@ from core.config import settings
 # Сопоставление названий секций с их идентификаторами
 sections_map = {
     "achievements": 1,
+    "products": 2,
 }
 
 # Получение данных всех секций
@@ -40,7 +41,7 @@ async def get_all(request: Request, session: AsyncSession) -> dict:
             entity_name=entity["name"],  
             session=session,
         )
-        sections.update({"section": section})
+        sections.update({entity["name"]: section})
         logger.info(f"Получены данные секции {entity}: {section}")
     return sections
 
@@ -152,7 +153,7 @@ async def update_content(id, payload, session):
     Returns:
         entity: обновленная запись
     """
-    model = models_map[payload.table]
+    model = models_map[payload.table_name]
     logger.info(f"Обовляем данные модели: {model}")
     # Получаем объект из базы
     entity = await session.get(model, id)
