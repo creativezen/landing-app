@@ -1,12 +1,12 @@
 import os
 import uuid
-from fastapi import HTTPException, status, Request
+from fastapi import HTTPException, UploadFile, status, Request
 from loguru import logger
 from sqlalchemy import select, update, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
-from sections.schemas import CardCreate, EntityDelete, EntityUpdate
+from sections.schemas import CardCreate, EntityDelete, EntityUpdate, ImageUpdate
 from sections.models import models_map, Section
 from core.config import settings
 
@@ -185,7 +185,13 @@ async def update_content(id: int, payload: EntityUpdate, session: AsyncSession):
     return card
 
 
-async def add_img(image, image_type, table_name, id, session,):
+async def add_img(
+    image: UploadFile,
+    image_type: str,
+    table_name: str,
+    id: int,
+    session: AsyncSession,
+):
     """Добавляем картинку
     Args:
         image (UploadFile): бинарник картинки
@@ -221,7 +227,7 @@ async def add_img(image, image_type, table_name, id, session,):
     return {"message": "Изображение успешно сохранено", image_type: field}
 
 
-async def save_image(image, image_type, table_name) -> str:
+async def save_image(image: UploadFile, image_type: str, table_name: str) -> str:
     """Сохраняем картинку
     Args:
         image (UploadFile): бинарник картинки
@@ -307,7 +313,12 @@ async def delete_image(file_location: str):
     return {"message": "Картинка успешно удалена!"}
 
 
-async def update_image(id, table_name, payload, session,):
+async def update_image(
+    id: int,
+    table_name: str,
+    payload: ImageUpdate,
+    session: AsyncSession,
+):
     """Замена или удаление картинки
     Args:
         id (int): ID записи

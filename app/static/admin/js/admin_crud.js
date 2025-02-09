@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', function(e){
                 payload[field_name] = new_value
 
                 try {
-                const response = await fetch(`http://0.0.0.0:8000/admin/${payload.table_name}/${payload.id}`, {
+                    const response = await fetch(`http://0.0.0.0:8000/admin/${payload.table_name}/${payload.id}`, {
                     method: 'PATCH',
                     headers: {
                     'Content-Type': 'application/json',

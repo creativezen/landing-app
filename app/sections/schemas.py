@@ -9,6 +9,7 @@ class EntityUpdate(BaseModel):
     table_name: str = Field(description="название таблицы - обязательное поле")
     title: str | None = None
     subtitle: str | None = None
+    description: str | None = None
     visibility: str | None = None
     image_desktop: str | None = None
     image_mobile: str | None = None
