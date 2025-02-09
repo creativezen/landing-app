@@ -2,36 +2,30 @@
 <section class="section stream strategy">
     <div class="background-strategy"></div>
     <div class="container">
-        <div class="section__header">
-            <h2 class="title white">Стратегическое <br>видение</h2>
-        </div>
-        <div class="section__body">
-            <div class="flex-row">
-                <div class="flex-row__item">
-                    <div class="card-arrow">
-                        <div class="card-arrow__icon">
-                            <svg viewBox="0 0 58 58" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3167 -0.000488281H57.5523L57.5519 44.2348L52.2186 44.2348L52.2189 9.10413L3.77124 57.5518L0 53.7806L48.4477 5.33284H13.3167V-0.000488281Z" />
-                            </svg>
+        {% if strategies.title %}
+            <div class="section__header">
+                <h2 class="title white">{{ strategies.title }}</h2>
+            </div>
+        {% endif %}
+        {% if strategies.strategies %}
+            <div class="section__body">
+                <div class="grid-group">
+                    {% for strategy in strategies.strategies %}
+                        <div class="grid-child" data-grid="6">
+                            <div class="card-arrow">
+                                <div class="card-arrow__icon">
+                                    <svg viewBox="0 0 58 58" fill="none">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3167 -0.000488281H57.5523L57.5519 44.2348L52.2186 44.2348L52.2189 9.10413L3.77124 57.5518L0 53.7806L48.4477 5.33284H13.3167V-0.000488281Z" />
+                                    </svg>
+                                </div>
+                                <div class="card-arrow__body white">
+                                    <p>{{ strategy.description }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-arrow__body white">
-                            <p>Национальная приводная компания позиционирует себя как динамично развивающаяся организация, которая активно участвует в модернизации промышленного сектора России.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex-row__item">
-                    <div class="card-arrow">
-                        <div class="card-arrow__icon">
-                            <svg viewBox="0 0 58 58" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3167 -0.000488281H57.5523L57.5519 44.2348L52.2186 44.2348L52.2189 9.10413L3.77124 57.5518L0 53.7806L48.4477 5.33284H13.3167V-0.000488281Z" />
-                            </svg>
-                        </div>
-                        <div class="card-arrow__body white">
-                            <p>Сосредоточив внимание на инновациях, надежности и ответственности, компания уверенно движется к будущему, стремясь изменить рынок приводной техники к лучшему.</p>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 </section>

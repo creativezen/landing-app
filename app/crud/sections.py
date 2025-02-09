@@ -14,6 +14,7 @@ from core.config import settings
 sections_map = {
     "achievements": 1,
     "products": 2,
+    "strategies": 3,
 }
 
 # Получение данных всех секций
@@ -36,7 +37,7 @@ async def get_all(request: Request, session: AsyncSession) -> dict:
     }
     for entity in sections_list:
         # читаем конкретную секцию
-        section = await read_sections(
+        section = await read_section(
             section_id=entity["id"],
             entity_name=entity["name"],  
             session=session,
@@ -47,7 +48,7 @@ async def get_all(request: Request, session: AsyncSession) -> dict:
 
 
 # Чтение данных конкретной секции
-async def read_sections(section_id: int, entity_name: str, session: AsyncSession):
+async def read_section(section_id: int, entity_name: str, session: AsyncSession):
     """Чтение данных  таблицы связанной с текущей секцией
     Args:
         section_id (int): DI секции
@@ -74,26 +75,26 @@ async def read_sections(section_id: int, entity_name: str, session: AsyncSession
     return relation_data
 
 
-async def create_instance(entity_name, payload, session):
+async def create_instance(table_name, payload, session):
     """Создание записи
     Args:
-        entity_name (str): название таблицы
+        table_name (str): название таблицы
         payload (str): данные для создания записи
         session (AsyncSession): текущая сессия
     Returns:
-        object: new_instance
+        object: new_card
     """
-    model = models_map[entity_name]
-    new_instance = model(**payload.dict())
+    model = models_map[table_name]
+    new_card = model(**payload.dict())
     # получим текущее максимальное значение order_value
     max_value = await get_order_value(model=model, session=session)
     # обновим у нового экземпляра order_value
-    new_instance.order_value = max_value + 1
+    new_card.order_value = max_value + 1
     # добавим новую запись
-    session.add(new_instance)
+    session.add(new_card)
     await session.commit()
-    await session.refresh(new_instance)
-    return new_instance
+    await session.refresh(new_card)
+    return new_card
 
 
 async def delete_instance(table_name, payload, session):
@@ -151,16 +152,16 @@ async def update_content(id, payload, session):
         payload (dict): новые данные
         session (AsyncSession): текущая сессия
     Returns:
-        entity: обновленная запись
+        instance: обновленная запись
     """
     model = models_map[payload.table_name]
     logger.info(f"Обовляем данные модели: {model}")
     # Получаем объект из базы
-    entity = await session.get(model, id)
-    if not entity:
+    card = await session.get(model, id)
+    if not card:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"entity {id} не найден..."
+            detail=f"Карточка: {id} не найден..."
         )
     # Обновляем только переданные поля
     payload_dict = payload.model_dump(exclude_unset=True)
@@ -169,27 +170,27 @@ async def update_content(id, payload, session):
         if isinstance(value, str) and value.strip() == "":
             value = None
         # производим запись данных
-        setattr(entity, key, value)
+        setattr(card, key, value)
     try:
         await session.commit()
-        await session.refresh(entity)
-        logger.info(f"Данные успешно обновлены: {entity}")
+        await session.refresh(card)
+        logger.info(f"Данные успешно обновлены: {card}")
     except Exception as e:
         session.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
-    return entity
+    return card
 
 
-async def add_img(image, image_type, entity_name, entity_id, session,):
+async def add_img(image, image_type, table_name, id, session,):
     """Добавляем картинку
     Args:
         image (UploadFile): бинарник картинки
         image_type (str): тип картинки (image_desktop, image_mobile)
-        entity_name (str): имя сущности/таблицы
-        entity_id (int): ID записи
+        table_name (str): имя таблицы
+        id (int): ID записи
         session (AsyncSession): текущая сессия
     Returns:
         success: {"message": ...}
@@ -197,20 +198,20 @@ async def add_img(image, image_type, entity_name, entity_id, session,):
     image_url = await save_image(
         image=image,
         image_type=image_type,
-        entity_name=entity_name,
+        table_name=table_name,
     )
     try:
-        model = models_map[entity_name]
+        model = models_map[table_name]
         query = (
             update(model)
-            .where(model.id == entity_id)
+            .where(model.id == id)
             .values({f"{image_type}": image_url})
         )
         field = await session.execute(query)
         logger.info(f"Обновление поля {image_type} успешно!")
         await session.commit()
     except Exception as e:
-        logger.error(f"Ошибка при обновлении {entity_name}-{image_type}: {e}")
+        logger.error(f"Ошибка при обновлении {table_name}-{image_type}: {e}")
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -219,12 +220,12 @@ async def add_img(image, image_type, entity_name, entity_id, session,):
     return {"message": "Изображение успешно сохранено", image_type: field}
 
 
-async def save_image(image, image_type, entity_name) -> str:
+async def save_image(image, image_type, table_name) -> str:
     """Сохраняем картинку
     Args:
         image (UploadFile): бинарник картинки
         image_type (str): тип картинки ("desktop", "mobile")
-        entity_name (str): название таблицы/сущности
+        table_name (str): название таблицы/сущности
     Returns:
         str: path
     """
@@ -251,7 +252,7 @@ async def save_image(image, image_type, entity_name) -> str:
     unique_filename = f"{uuid.uuid4()}_{image_type}.{file_extension}"
     
     # Проверяем налиличе директории и создаем ее, если требуется
-    directory_path = f"{settings.files.image_files}/{entity_name}"
+    directory_path = f"{settings.files.image_files}/{table_name}"
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
         
@@ -270,7 +271,7 @@ async def save_image(image, image_type, entity_name) -> str:
             detail="Ошибка при чтении файла."
         )
     # Генерация URL для изображения
-    image_path = f"/{settings.files.image_files}/{entity_name}/{unique_filename}"
+    image_path = f"/{settings.files.image_files}/{table_name}/{unique_filename}"
     return image_path
 
 
@@ -305,11 +306,11 @@ async def delete_image(file_location: str):
     return {"message": "Картинка успешно удалена!"}
 
 
-async def update_image(entity_id, entity_name, payload, session,):
+async def update_image(id, table_name, payload, session,):
     """Замена или удаление картинки
     Args:
-        entity_id (int): ID записи
-        entity_name (str): название таблицы
+        id (int): ID записи
+        table_name (str): название таблицы
         payload (dict): данные для обновления
         session (AsyncSession): текущая сессия
     Returns:
@@ -321,12 +322,12 @@ async def update_image(entity_id, entity_name, payload, session,):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Недопустимый тип действия {action}. Ожидается image_delete, или image_refresh"
         )
-    model = models_map[entity_name]
+    model = models_map[table_name]
     try:
         if action == 'image_delete':
             # удаляем картинку на диске
             await delete_image(payload.image_src)
-            query = update(model).where(model.id == entity_id).values({payload.image_type: None})
+            query = update(model).where(model.id == id).values({payload.image_type: None})
             logger.info(f"Удаление в поле {payload.image_type} успешно!")
             await session.execute(query)
             await session.commit()
@@ -337,12 +338,12 @@ async def update_image(entity_id, entity_name, payload, session,):
             # uploaded_img = await add_img(
             #     image=image,
             #     image_type=image_type,
-            #     entity_name=entity_name,
-            #     entity_id=entity_id,
+            #     table_name=table_name,
+            #     id=id,
             #     session=session,
             # )
         #     # логика сохранения новой картинки
-        #     entity = await session.get(model, entity_id)
+        #     entity = await session.get(model, id)
         #     setattr(entity, payload.image_type, payload.image_src)
         #     logger.info(f"Обновление в поле {payload.image_type} успешно!")
     except Exception as e:

@@ -1,0 +1,43 @@
+<!-- стратегическое видение  -->
+<section class="section stream strategy" data-table="sections" data-id="{{ strategies.id }}">
+    <div class="background-strategy"></div>
+    <div class="container">
+        <div class="section__header">
+            <div data-field="title" class="title" contenteditable="true">
+                {% if strategies.title %} {{ strategies.title }}
+                {% else %} <small>Здесь пока пусто...</small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="section__body">
+            <div class="grid-group">
+                {% for strategy in strategies.strategies %}
+                <div class="grid-child" data-grid="6" data-table="{{ strategy.table_name }}" data-id="{{ strategy.id }}">
+                    <div class="card-arrow">
+                        <div class="card-arrow__icon">
+                            <svg viewBox="0 0 58 58" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3167 -0.000488281H57.5523L57.5519 44.2348L52.2186 44.2348L52.2189 9.10413L3.77124 57.5518L0 53.7806L48.4477 5.33284H13.3167V-0.000488281Z" />
+                            </svg>
+                        </div>
+                        <div class="card-arrow__body white">
+                            <div data-field="description" contenteditable="true">
+                                {% if strategy.description %} {{ strategy.description }}
+                                {% else %} <small>Здесь пока пусто...</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-arrow__footer">
+                            <button class="button small red js-delete-instance">Удалить карточку</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="grid-child" data-grid="6">
+                    <div class="card-column auto">
+                        <button class="button add-instance js-add-instance" data-table="strategies">Добавить экземпляр</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
