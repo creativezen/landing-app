@@ -1,18 +1,7 @@
 import uuid
-from fastapi import (
-    APIRouter,
-    Request,
-    Depends,
-    HTTPException,
-    UploadFile,
-    File,
-    Form,
-    status,
-)
+from fastapi import (APIRouter, Request, Depends, UploadFile, File,)
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, Field
-from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 
@@ -21,14 +10,8 @@ from users.models import User
 from core import db_helper as db
 from core.config import settings
 
-from crud.sections import read_sections, get_all, create_instance, update_content, add_img, update_image, delete_instance
-from sections.schemas import (
-    CardUpdate,
-    CardCreate,
-    CardDelete,
-    SectioTitleUpdate,
-    ImageUpdate,
-)
+from crud.sections import get_all, create_card, update_content, add_img, update_image, delete_card
+from sections.schemas import (CardCreate, EntityDelete, EntityUpdate, ImageUpdate,)
 
 
 # Инициализация Jinja2Templates с указанием директории шаблонов
@@ -52,14 +35,14 @@ async def get_admin(
 
 
 # Добавить новую запись к вложенной в секцию сущности
-@router.post("/sections/{entity_name}")
+@router.post("/sections/{table_name}")
 async def new_istance(
-    entity_name: str,
+    table_name: str,
     payload: CardCreate,
     session: AsyncSession = Depends(db.get_session_without_commit),
 ):
-    return await create_instance(
-        entity_name=entity_name, 
+    return await create_card(
+        table_name=table_name, 
         payload=payload,
         session=session
     )
@@ -69,10 +52,10 @@ async def new_istance(
 @router.delete("/sections/{table_name}")
 async def remove_instance(
     table_name: str,
-    payload: CardDelete,
+    payload: EntityDelete,
     session: AsyncSession = Depends(db.get_session_without_commit)
 ):
-    return await delete_instance(
+    return await delete_card(
         table_name=table_name,
         payload=payload,
         session=session
@@ -83,7 +66,7 @@ async def remove_instance(
 @router.patch("/sections/{id}")
 async def patch_section(
     id: int,
-    payload: SectioTitleUpdate,
+    payload: EntityUpdate,
     session: AsyncSession = Depends(db.get_session_with_commit),
 ):
     return await update_content(
@@ -93,46 +76,50 @@ async def patch_section(
     )
 
 
-# ресурс на изменение карточек в секции id=achievemtns
+# ресурс на изменение карточки
 @router.patch("/{table_name}/{id}")
-async def update_card(
+async def patch_card(
     id: int,
     table_name: str,
-    payload: CardUpdate,
+    payload: EntityUpdate,
     session: AsyncSession = Depends(db.get_session_with_commit),
 ):
-    return await update_content(id=id, payload=payload, session=session)
+    return await update_content(
+        id=id,
+        payload=payload,
+        session=session
+    )
 
 
 # ресурс на добавление картинки
 @router.post("/images/")
-async def upload_image(
+async def post_image(
     image: UploadFile = File(...),
     image_type: str = File(...),
-    entity_name: str = File(...),
-    entity_id: int = File(...),
+    table_name: str = File(...),
+    id: int = File(...),
     session: AsyncSession = Depends(db.get_session_without_commit),
 ):
     return await add_img(
         image=image,
         image_type=image_type,
-        entity_name=entity_name,
-        entity_id=entity_id,
+        table_name=table_name,
+        id=id,
         session=session,
     )
 
 
 # ресурс на удаление/замену картинки
-@router.patch("/images/{entity_name}/{entity_id}")
-async def action_img(
-    entity_id: int,
-    entity_name: str,
+@router.patch("/images/{table_name}/{id}")
+async def patch_img(
+    id: int,
+    table_name: str,
     payload: ImageUpdate,
     session: AsyncSession = Depends(db.get_session_without_commit),
 ):
     return await update_image(
-        entity_id=entity_id,
-        entity_name=entity_name,
+        id=id,
+        table_name=table_name,
         payload=payload,
         session=session
     )

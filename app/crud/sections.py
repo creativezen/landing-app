@@ -6,6 +6,7 @@ from sqlalchemy import select, update, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
+from sections.schemas import CardCreate, EntityDelete, EntityUpdate
 from sections.models import models_map, Section
 from core.config import settings
 
@@ -75,7 +76,7 @@ async def read_section(section_id: int, entity_name: str, session: AsyncSession)
     return relation_data
 
 
-async def create_instance(table_name, payload, session):
+async def create_card(table_name: str, payload: CardCreate, session: AsyncSession):
     """Создание записи
     Args:
         table_name (str): название таблицы
@@ -85,7 +86,7 @@ async def create_instance(table_name, payload, session):
         object: new_card
     """
     model = models_map[table_name]
-    new_card = model(**payload.dict())
+    new_card = model(**payload.model_dump())
     # получим текущее максимальное значение order_value
     max_value = await get_order_value(model=model, session=session)
     # обновим у нового экземпляра order_value
@@ -97,7 +98,7 @@ async def create_instance(table_name, payload, session):
     return new_card
 
 
-async def delete_instance(table_name, payload, session):
+async def delete_card(table_name: str, payload: EntityDelete, session: AsyncSession):
     """Удаление записи
     Args:
         table_name (str): название таблицы
@@ -130,7 +131,7 @@ async def delete_instance(table_name, payload, session):
     
 
 
-async def get_order_value(model, session) -> int:
+async def get_order_value(model, session: AsyncSession) -> int:
     """Получение последнего порядкового номера среди записей
     Args:
         model (model): таблица
@@ -145,7 +146,7 @@ async def get_order_value(model, session) -> int:
     return order_value if order_value is not None else 0
 
 
-async def update_content(id, payload, session):
+async def update_content(id: int, payload: EntityUpdate, session: AsyncSession):
     """Обновляем запись
     Args:
         id (int): ID записи

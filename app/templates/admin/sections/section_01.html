@@ -1,16 +1,16 @@
 <!-- Основные достиженияи  -->
-<section class="section stream achievements" data-table="sections" data-id="{{ section.id }}">
+<section class="section stream achievements" data-table="sections" data-id="{{ achievements.id }}">
     <div class="container">
         <div class="section__header">
             <div data-field="title" class="title" contenteditable="true">
-                {% if section.title %} {{ section.title }}
+                {% if achievements.title %} {{ achievements.title }}
                 {% else %} <small>Здесь пока пусто...</small>
                 {% endif %}
             </div>
         </div>
         <div class="section__body">
             <div class="grid-group">
-                {% for achievement in section.achievements %}
+                {% for achievement in achievements.achievements %}
                 <div class="grid-child" data-grid="4" data-table="{{ achievement.table_name }}" data-id="{{ achievement.id }}">
                     <div class="card-column border-left auto">
                         <!-- Форма для загрузки изображения -->
@@ -143,7 +143,8 @@
     [contenteditable="true"] {
         padding: 0.4em;
         border: 1px solid burlywood;
-        background-color: #f2f2f2;
+        background-color: #f2f2f2 !important;
+        color: var(--blue) !important;
     }
     [contenteditable="true"]:focus {
         padding: 0.4em;
@@ -178,6 +179,9 @@
     }
     .admin .button.add-instance:hover {
         background-color: #e3e3e3;
+    }
+    .admin .card__header a::after {
+        display: none;
     }
     
 </style>

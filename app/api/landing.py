@@ -6,7 +6,7 @@ from loguru import logger
 
 from core import db_helper as db
 from core.config import settings
-from crud.sections import get_all, read_sections
+from crud.sections import get_all
 
 # Инициализация Jinja2Templates с указанием директории шаблонов
 landing = Jinja2Templates(directory=settings.files.landing_templates)
