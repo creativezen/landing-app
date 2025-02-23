@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  db:
+    restart: always
+    image: postgres:16
+    container_name: postgres_landing
+    env_file:
+      - app/env/.env
+    # environment:
+    #   POSTGRES_USER: postgres
+    #   POSTGRES_PASSWORD: postgres
+    #   POSTGRES_DB: postgres
+
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+    # networks_mode: 'host'
+    
+    ports:
+      - 5433:5432
