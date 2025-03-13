@@ -1,13 +1,12 @@
 import uuid
-from typing import Annotated
 from datetime import datetime
 from decimal import Decimal
-from sqlalchemy import MetaData, func, TIMESTAMP, Integer, inspect
-from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from typing import Annotated
 
 from core.config import settings
-
+from sqlalchemy import TIMESTAMP, Integer, MetaData, func, inspect
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 str_uniq = Annotated[str, mapped_column(unique=True, nullable=False)]
 

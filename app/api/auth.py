@@ -1,21 +1,21 @@
-from fastapi import APIRouter, Response, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from auth.schemas import (EmailModel, SUserAddDB, SUserAuth, SUserInfo,
+                          SUserRegister)
+from auth.utils import authenticate_user, hash_password, set_tokens
 from core import db_helper
 from core.exceptions import exc
-from users.models import User
-from dependencies.dep_auth import get_current_user, check_refresh_token
 from crud.users import UsersDAO
-from auth.schemas import SUserRegister, SUserAuth, EmailModel, SUserAddDB, SUserInfo
-from auth.utils import authenticate_user, hash_password, set_tokens
+from dependencies.dep_auth import check_refresh_token, get_current_user
+from fastapi import APIRouter, Depends, Response
+from sqlalchemy.ext.asyncio import AsyncSession
+from users.models import User
 
-
-router = APIRouter(prefix='/auth', tags=['auth'])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register/")
 async def register_user(
-    user_data: SUserRegister, session: AsyncSession = Depends(db_helper.get_session_with_commit)
+    user_data: SUserRegister,
+    session: AsyncSession = Depends(db_helper.get_session_with_commit),
 ) -> dict:
     # Проверка существования пользователя
     user_dao = UsersDAO(session)

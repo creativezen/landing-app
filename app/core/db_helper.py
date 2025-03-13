@@ -1,13 +1,8 @@
 from typing import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import (
-    create_async_engine,
-    AsyncEngine,
-    async_sessionmaker,
-    AsyncSession,
-)
-
 from core.config import settings
+from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
+                                    async_sessionmaker, create_async_engine)
 
 
 class DatabaseHelper:
@@ -39,10 +34,10 @@ class DatabaseHelper:
     async def session_getter(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_factory() as session:
             yield session
-            
+
     async def get_session_with_commit(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_factory() as session:
-            try: 
+            try:
                 yield session
                 await session.commit()
             except Exception as e:
@@ -50,17 +45,16 @@ class DatabaseHelper:
                 raise
             finally:
                 await session.close()
-                
+
     async def get_session_without_commit(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_factory() as session:
-            try: 
+            try:
                 yield session
             except Exception as e:
                 await session.rollback()
                 raise
             finally:
                 await session.close()
-            
 
 
 db_helper = DatabaseHelper(

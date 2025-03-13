@@ -1,20 +1,29 @@
-version: '3.8'
+networks:
+  app:
+
 services:
-  db:
+  api:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: landing_api
+    env_file:
+      - app/env/.env
+    depends_on:
+      - postgres
     restart: always
-    image: postgres:16
-    container_name: postgres_landing
-    # env_file:
-    #   - app/env/.env
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app
-
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-
-    # networks_mode: 'host'
-    
+    networks:
+      app:
     ports:
-      - 5433:5432
+      - "8080:8000"
+
+  postgres:
+    image: postgres:16
+    container_name: landing_db
+    restart: always
+    env_file:
+      - app/env/.env
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      app:

@@ -1,4 +1,4 @@
-from fastapi import status, HTTPException
+from fastapi import HTTPException, status
 
 
 class Exceptions:
@@ -33,7 +33,6 @@ class Exceptions:
         status_code=status.HTTP_400_BAD_REQUEST, detail="Некорректный формат токена"
     )
 
-
     # Токен отсутствует в заголовке
     token_not_found = HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST, detail="Токен отсутствует в заголовке"
@@ -53,5 +52,6 @@ class Exceptions:
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="Неверный формат токена. Ожидается 'Bearer <токен>'",
     )
-    
+
+
 exc = Exceptions()

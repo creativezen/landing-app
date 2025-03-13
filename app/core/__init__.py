@@ -6,8 +6,8 @@ __all__ = (
     "Achievement",
 )
 
-from .db_helper import db_helper
-from .base import Base
-
+from sections.models import Achievement, Section
 from users.models import User
-from sections.models import Section, Achievement
+
+from .base import Base
+from .db_helper import db_helper

@@ -1,18 +1,18 @@
 import uuid
-from fastapi import (APIRouter, Request, Depends, UploadFile, File,)
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from loguru import logger
 
-from dependencies.dep_auth import get_current_user
-from users.models import User
 from core import db_helper as db
 from core.config import settings
-
-from crud.sections import get_all, create_card, update_content, add_img, update_image, delete_card
-from sections.schemas import (CardCreate, EntityDelete, EntityUpdate, ImageUpdate,)
-
+from crud.sections import (add_img, create_card, delete_card, get_all,
+                           update_content, update_image)
+from dependencies.dep_auth import get_current_user
+from fastapi import APIRouter, Depends, File, Request, UploadFile
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from loguru import logger
+from sections.schemas import (CardCreate, EntityDelete, EntityUpdate,
+                              ImageUpdate)
+from sqlalchemy.ext.asyncio import AsyncSession
+from users.models import User
 
 # Инициализация Jinja2Templates с указанием директории шаблонов
 admin = Jinja2Templates(directory=settings.files.admin_templates)
@@ -41,25 +41,17 @@ async def new_istance(
     payload: CardCreate,
     session: AsyncSession = Depends(db.get_session_without_commit),
 ):
-    return await create_card(
-        table_name=table_name, 
-        payload=payload,
-        session=session
-    )
-    
-    
+    return await create_card(table_name=table_name, payload=payload, session=session)
+
+
 # Удалить запись из вложенной в секцию сущности
 @router.delete("/sections/{table_name}")
 async def remove_instance(
     table_name: str,
     payload: EntityDelete,
-    session: AsyncSession = Depends(db.get_session_without_commit)
+    session: AsyncSession = Depends(db.get_session_without_commit),
 ):
-    return await delete_card(
-        table_name=table_name,
-        payload=payload,
-        session=session
-    )
+    return await delete_card(table_name=table_name, payload=payload, session=session)
 
 
 # ресурс на изменение секции: заголовок, подзаголовок, кнопка
@@ -84,11 +76,7 @@ async def patch_card(
     payload: EntityUpdate,
     session: AsyncSession = Depends(db.get_session_with_commit),
 ):
-    return await update_content(
-        id=id,
-        payload=payload,
-        session=session
-    )
+    return await update_content(id=id, payload=payload, session=session)
 
 
 # ресурс на добавление картинки
@@ -118,8 +106,5 @@ async def patch_img(
     session: AsyncSession = Depends(db.get_session_without_commit),
 ):
     return await update_image(
-        id=id,
-        table_name=table_name,
-        payload=payload,
-        session=session
+        id=id, table_name=table_name, payload=payload, session=session
     )

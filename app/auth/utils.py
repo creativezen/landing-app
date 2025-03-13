@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
+
 import bcrypt
 import jwt
+from core.config import settings
 from fastapi import Response
 from loguru import logger
-
-from core.config import settings
 
 
 def create_tokens(data: dict) -> dict:
@@ -12,22 +12,22 @@ def create_tokens(data: dict) -> dict:
     access_token = encode_jwt(
         payload={**data, "type": "access"},
         # expire_delta=timedelta(seconds=10)  # Для отладки (10 секунд)
-        expire_delta=timedelta(minutes=settings.auth.token_expire_minutes)  # Продакшен
+        expire_delta=timedelta(minutes=settings.auth.token_expire_minutes),  # Продакшен
     )
     # RefreshToken
     refresh_token = encode_jwt(
         payload={**data, "type": "refresh"},
-        expire_delta=timedelta(days=settings.auth.token_expire_days)
+        expire_delta=timedelta(days=settings.auth.token_expire_days),
     )
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
 def encode_jwt(
-        payload: dict,
-        private_key: str = settings.auth.private_key.read_text(),
-        algorithm: str = settings.auth.algorithm,
-        expire_delta: timedelta | None = None,
-    ):
+    payload: dict,
+    private_key: str = settings.auth.private_key.read_text(),
+    algorithm: str = settings.auth.algorithm,
+    expire_delta: timedelta | None = None,
+):
     to_encode = payload.copy()
     now = datetime.now(timezone.utc)
     if expire_delta:
@@ -38,40 +38,32 @@ def encode_jwt(
     to_encode["exp"] = expire
     # Добавляем время создания токена (iat)
     to_encode.setdefault("iat", now)
-    encoded_jwt = jwt.encode(
-        to_encode,
-        private_key,
-        algorithm=algorithm
-    )
+    encoded_jwt = jwt.encode(to_encode, private_key, algorithm=algorithm)
     return encoded_jwt
 
 
 def decode_jwt(
-        token: str | bytes, 
-        public_key: str = settings.auth.public_key.read_text(), 
-        algorithm: str = settings.auth.algorithm,
-    ):
-    decode = jwt.decode(
-        token,
-        public_key,
-        algorithms=[algorithm]
-    )
+    token: str | bytes,
+    public_key: str = settings.auth.public_key.read_text(),
+    algorithm: str = settings.auth.algorithm,
+):
+    decode = jwt.decode(token, public_key, algorithms=[algorithm])
     logger.info(f"Получаем декод токена: {decode}")
     return decode
 
 
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
-    hashed_password_bytes: bytes = bcrypt.hashpw(password.encode('utf-8'), salt)
-    hashed_password = hashed_password_bytes.decode('utf-8')
+    hashed_password_bytes: bytes = bcrypt.hashpw(password.encode("utf-8"), salt)
+    hashed_password = hashed_password_bytes.decode("utf-8")
     logger.info(f"Хешированный пароль: {hashed_password}")
     return hashed_password
 
 
 def validate_password(password: str, hashed_password: str) -> bool:
     try:
-        password_bytes: bytes = password.encode('utf-8')
-        hashed_password_bytes: bytes = hashed_password.encode('utf-8')
+        password_bytes: bytes = password.encode("utf-8")
+        hashed_password_bytes: bytes = hashed_password.encode("utf-8")
         # logger.info(f"Введенный пароль: {password}")
         # logger.info(f"Хеш из базы данных: {hashed_password}")
         valid_pass: bool = bcrypt.checkpw(password_bytes, hashed_password_bytes)
@@ -95,7 +87,7 @@ async def authenticate_user(user, password):
 
 def set_tokens(response: Response, user_id: int):
     new_tokens = create_tokens(data={"sub": str(user_id)})
-    access_token = new_tokens.get('access_token')
+    access_token = new_tokens.get("access_token")
     refresh_token = new_tokens.get("refresh_token")
     # logger.info(f"Вход в систему с access_toke: {access_token} и refresh_token: {refresh_token}")
     response.set_cookie(
